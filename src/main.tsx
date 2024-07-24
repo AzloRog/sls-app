@@ -1,7 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createMemoryRouter,
+} from "react-router-dom";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -17,34 +21,38 @@ import { Provider } from "react-redux";
 import RootLayout from "./pages/RootLayout.tsx";
 import CreatePostPage from "./pages/CreatePostPage.tsx";
 
-const router = createBrowserRouter([
-  {
-    element: <RootLayout />,
-    children: [
-      {
-        path: "/sls-app",
-        element: <HomePage />,
-      },
-      {
-        path: "/create-post",
-        element: <CreatePostPage />,
-      },
-    ],
-  },
-  {
-    element: <AuthPage />,
-    children: [
-      {
-        path: "/sign-in",
-        element: <SigninForm />,
-      },
-      {
-        path: "/sign-up",
-        element: <SignupForm />,
-      },
-    ],
-  },
-]);
+const router = createMemoryRouter(
+  [
+    {
+      path: "/",
+      element: <RootLayout />,
+      children: [
+        {
+          path: "/sls-app",
+          element: <HomePage />,
+        },
+        {
+          path: "/create-post",
+          element: <CreatePostPage />,
+        },
+      ],
+    },
+    {
+      element: <AuthPage />,
+      children: [
+        {
+          path: "/sign-in",
+          element: <SigninForm />,
+        },
+        {
+          path: "/sign-up",
+          element: <SignupForm />,
+        },
+      ],
+    },
+  ],
+  { initialEntries: ["/sls-app"] }
+);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
