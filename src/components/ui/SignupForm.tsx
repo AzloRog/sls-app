@@ -102,10 +102,10 @@ const SignupForm = () => {
       </Box>
 
       <Button variant="contained" type="submit" disabled={isLoading}>
-        SignIn
+        SignUp
       </Button>
       <Typography sx={{ alignSelf: "center" }}>
-        Already have an account? <Link to="/sign-in">sign up</Link>
+        Already have an account? <Link to="/sign-in">sign in</Link>
       </Typography>
     </Paper>
   );
