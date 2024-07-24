@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { TextField, Button, Box, Paper, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import supabase from "../../supabaseClient";
 import { Link } from "react-router-dom";
 
@@ -9,6 +16,8 @@ const SignupForm = () => {
   const [name, setName] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const matches = useMediaQuery("(min-width:768px)");
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +50,7 @@ const SignupForm = () => {
         flexDirection: "column",
         gap: 4,
         paddingY: 10,
-        paddingX: 20,
+        paddingX: matches ? 20 : 5,
         boxShadow: 6,
         fontSize: 24,
       }}
@@ -51,7 +60,9 @@ const SignupForm = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 12,
+          rowGap: 1,
+          columnGap: 12,
+          flexDirection: matches ? "row" : "column",
         }}
       >
         <label htmlFor="email">Email</label>
@@ -69,7 +80,9 @@ const SignupForm = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 12,
+          rowGap: 1,
+          columnGap: 12,
+          flexDirection: matches ? "row" : "column",
         }}
       >
         <label htmlFor="name">User name</label>
@@ -82,12 +95,14 @@ const SignupForm = () => {
           type="text"
         />
       </Box>
-
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          rowGap: 1,
+          columnGap: 12,
+          flexDirection: matches ? "row" : "column",
         }}
       >
         <label htmlFor="pass">Password</label>
@@ -104,8 +119,11 @@ const SignupForm = () => {
       <Button variant="contained" type="submit" disabled={isLoading}>
         SignUp
       </Button>
-      <Typography sx={{ alignSelf: "center" }}>
-        Already have an account? <Link to="/sign-in">sign in</Link>
+      <Typography sx={{ alignSelf: "center", textAlign: "center" }}>
+        Already have an account?{" "}
+        <Link to="/sign-in" style={{ textWrap: "nowrap" }}>
+          sign in
+        </Link>
       </Typography>
     </Paper>
   );

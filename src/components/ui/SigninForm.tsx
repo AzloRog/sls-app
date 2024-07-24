@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { TextField, Button, Box, Paper, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import supabase from "../../supabaseClient";
 import { Link } from "react-router-dom";
 
@@ -7,6 +14,8 @@ const SigninForm = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const matches = useMediaQuery("(min-width:768px)");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +44,7 @@ const SigninForm = () => {
         flexDirection: "column",
         gap: 4,
         paddingY: 10,
-        paddingX: 20,
+        paddingX: matches ? 20 : 5,
         boxShadow: 6,
         fontSize: 24,
       }}
@@ -45,7 +54,9 @@ const SigninForm = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 12,
+          rowGap: 1,
+          columnGap: 12,
+          flexDirection: matches ? "row" : "column",
         }}
       >
         <label htmlFor="email">Email</label>
@@ -63,6 +74,7 @@ const SigninForm = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexDirection: matches ? "row" : "column",
         }}
       >
         <label htmlFor="pass">Password</label>
@@ -78,8 +90,11 @@ const SigninForm = () => {
       <Button variant="contained" type="submit" disabled={isLoading}>
         SignIn
       </Button>
-      <Typography sx={{ alignSelf: "center" }}>
-        Doesn't have an account? <Link to="/sign-up">sign up</Link>
+      <Typography sx={{ alignSelf: "center", textAlign: "center" }}>
+        Doesn't have an account?{" "}
+        <Link to="/sign-up" style={{ textWrap: "nowrap" }}>
+          sign up
+        </Link>
       </Typography>
     </Paper>
   );
