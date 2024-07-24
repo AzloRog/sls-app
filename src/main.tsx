@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        path: "/",
+        path: "/sls-app",
         element: <HomePage />,
       },
       {
