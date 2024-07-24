@@ -19,15 +19,15 @@ import CreatePostPage from "./pages/CreatePostPage.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "/sls-app",
+    path: "/",
     element: <RootLayout />,
     children: [
       {
-        path: "/sls-app/",
+        path: "/",
         element: <HomePage />,
       },
       {
-        path: "/sls-app/create-post",
+        path: "/create-post",
         element: <CreatePostPage />,
       },
     ],
