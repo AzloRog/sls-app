@@ -5,7 +5,7 @@ const pages = [
   {
     id: 0,
     title: "Home",
-    link: "/sls-app/",
+    link: "/sls-app",
     icon: <CottageOutlinedIcon />,
   },
   {

@@ -19,7 +19,6 @@ import CreatePostPage from "./pages/CreatePostPage.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "/sls-app",
     element: <RootLayout />,
     children: [
       {
