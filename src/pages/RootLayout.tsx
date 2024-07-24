@@ -22,16 +22,9 @@ const RootLayout = () => {
   const navigate = useNavigate();
   useRedirect();
 
-  const handleRedirect = (value: number) => {
-    setValue(value);
-    switch (value) {
-      case 0:
-        navigate("/");
-        break;
-      case 1:
-        navigate("/create-post");
-        break;
-    }
+  const handleRedirect = (id: number, to: string) => {
+    setValue(id);
+    navigate(to);
   };
   return (
     <>
@@ -66,9 +59,6 @@ const RootLayout = () => {
           <BottomNavigation
             showLabels
             value={value}
-            onChange={(_, newValue) => {
-              handleRedirect(newValue);
-            }}
             sx={{
               position: "fixed",
               width: "100%",
@@ -81,6 +71,7 @@ const RootLayout = () => {
                 key={page.id}
                 label={page.title}
                 icon={page.icon}
+                onClick={() => handleRedirect(page.id, page.link)}
               />
             ))}
           </BottomNavigation>
