@@ -11,7 +11,7 @@ const pages = [
   {
     id: 1,
     title: "Create Post",
-    link: "/sls-app/create-post",
+    link: "/sls-app/create-post/",
     icon: <PostAddOutlinedIcon />,
   },
 ];
