@@ -19,7 +19,7 @@ const useRedirect = () => {
       dispatch(setSession(session));
       if (session) {
         dispatch(setIsAuth(true));
-        currLocation == ("/sign-in" || "/sign-up") && navigate("/");
+        currLocation == ("/sign-in" || "/sign-up") && navigate("/sls-app");
       } else {
         dispatch(setIsAuth(false));
 

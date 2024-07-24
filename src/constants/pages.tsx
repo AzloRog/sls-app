@@ -5,13 +5,13 @@ const pages = [
   {
     id: 0,
     title: "Home",
-    link: "/",
+    link: "/sls-app/",
     icon: <CottageOutlinedIcon />,
   },
   {
     id: 1,
     title: "Create Post",
-    link: "/create-post",
+    link: "/sls-app/create-post",
     icon: <PostAddOutlinedIcon />,
   },
 ];
