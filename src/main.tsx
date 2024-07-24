@@ -27,7 +27,7 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "/sls-app/create-post",
+        path: "/sls-app/create-post/",
         element: <CreatePostPage />,
       },
     ],
