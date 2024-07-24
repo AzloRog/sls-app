@@ -22,11 +22,11 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        path: "/sls-app#/",
+        path: "/sls-app",
         element: <HomePage />,
       },
       {
-        path: "/create-post#/",
+        path: "/create-post",
         element: <CreatePostPage />,
       },
     ],
