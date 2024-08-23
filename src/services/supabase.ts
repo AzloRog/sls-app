@@ -5,24 +5,15 @@ import {
   TypedUseMutation,
 } from "@reduxjs/toolkit/query/react";
 import supabase from "../supabaseClient";
-import { CamelCaseDatabase } from "../types/supabase";
-export type PostType =
-  CamelCaseDatabase["public"]["Tables"]["users_posts"]["Row"];
-export interface addPost
-  extends Omit<PostType, "authorName" | "createdAt" | "id" | "imageUrl"> {
-  authorName: string;
-  createdAt?: string;
-  id?: string;
-  imageUrl?: string;
-}
+import { Tables, TablesInsert } from "../types/database.types";
 
 export const supabaseApi = createApi({
   reducerPath: "supabaseApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: ["PostText", "PostImage"],
+  tagTypes: ["PostText", "PostImage", "FavoritePosts"],
   endpoints: (builder) => ({
     //Post&post text endpoints
-    getPosts: builder.query<PostType[] | null, number>({
+    getPosts: builder.query<Tables<"users_posts">[] | any, number>({
       providesTags: ["PostText"],
       queryFn: async (pageNumber: number) => {
         const limit = 10;
@@ -55,17 +46,17 @@ export const supabaseApi = createApi({
         return currentArg !== previousArg;
       },
     }),
-    addNewPost: builder.mutation<any, addPost>({
+    addNewPost: builder.mutation<any, TablesInsert<"users_posts">>({
       invalidatesTags: ["PostText"],
       queryFn: async (post) => {
-        const { authorName, text, imageUrl, userId } = post;
+        const { author_name, text, image_url, user_id } = post;
         const { data, error } = await supabase
           .from("users_posts")
           .insert({
-            author_name: authorName,
+            author_name: author_name,
             text,
-            image_url: imageUrl,
-            user_id: userId,
+            image_url: image_url,
+            user_id: user_id,
           })
           .select();
         if (error) {
@@ -103,6 +94,41 @@ export const supabaseApi = createApi({
           return { error };
         }
         return { data: id };
+      },
+    }),
+
+    getPostLikedUsers: builder.query<any, string>({
+      providesTags: ["FavoritePosts"],
+      queryFn: async (postId: string) => {
+        const { data, error } = await supabase
+          .from("users_posts_likes")
+          .select("user_id")
+          .eq("post_id", postId);
+
+        if (error) {
+          return { error };
+        }
+        return { data };
+      },
+    }),
+    //PostLikes endpoints
+    setPostFavorite: builder.mutation<
+      Tables<"users_posts_likes">[],
+      { userId: string | undefined; postId: string }
+    >({
+      invalidatesTags: ["FavoritePosts"],
+      queryFn: async (args) => {
+        const { userId, postId } = args;
+
+        const { data, error } = await supabase
+          .from("users_posts_likes")
+          .insert({ user_id: userId, post_id: postId })
+          .select();
+
+        if (error) {
+          return { error };
+        }
+        return { data };
       },
     }),
 
@@ -163,24 +189,37 @@ export const {
   useAddNewPostMutation,
   useUpdatePostTextMutation,
   useDeletePostMutation,
+  useGetPostLikedUsersQuery,
+  useSetPostFavoriteMutation,
   useAddNewImageMutation,
   useGetImageQuery,
   useUpdateImageMutation,
   useDeleteImageMutation,
 }: {
-  useGetPostsQuery: TypedUseQuery<PostType[] | null, number, any>;
-  useAddNewPostMutation: TypedUseMutation<any, addPost, any>;
+  useGetPostsQuery: TypedUseQuery<Tables<"users_posts">[] | any, number, any>;
+  useAddNewPostMutation: TypedUseMutation<
+    any,
+    TablesInsert<"users_posts">,
+    any
+  >;
   useUpdatePostTextMutation: TypedUseMutation<
     string,
     { id: string; text: string },
     any
   >;
   useDeletePostMutation: TypedUseMutation<string, string, any>;
+  useGetPostLikedUsersQuery: TypedUseQuery<string[], string, any>;
+  useSetPostFavoriteMutation: TypedUseMutation<
+    Tables<"users_posts_likes">[],
+    { userId: string | undefined; postId: string },
+    any
+  >;
   useAddNewImageMutation: TypedUseMutation<
     object,
     { path: string; image: File },
     any
   >;
+
   useGetImageQuery: TypedUseQuery<string, string, any>;
   useUpdateImageMutation: TypedUseMutation<
     File,
