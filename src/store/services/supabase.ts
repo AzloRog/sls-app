@@ -4,7 +4,7 @@ import {
   TypedUseQuery,
   TypedUseMutation,
 } from "@reduxjs/toolkit/query/react";
-import supabase from "../supabaseClient";
+import supabase from "../../supabaseClient";
 import { Tables, TablesInsert } from "../types/database.types";
 
 export const supabaseApi = createApi({

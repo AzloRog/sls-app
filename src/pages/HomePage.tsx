@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import Posts from "../components/Posts";
+import PostsList from "../components/PostsList";
 import useRedirect from "../hooks/useRedirect";
 
 const HomePage = () => {
@@ -16,7 +16,7 @@ const HomePage = () => {
       >
         Home feed
       </Typography>
-      <Posts />
+      <PostsList />
     </>
   );
 };

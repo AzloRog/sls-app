@@ -5,9 +5,10 @@ export interface InterfaceState {
   isModalOpen: boolean;
 }
 const initialState: InterfaceState = {
-  postsPage: 0,
+  postsPage: 1,
   isModalOpen: false,
 };
+
 export const interfaceSlice = createSlice({
   name: "interface",
   initialState,

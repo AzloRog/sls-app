@@ -10,7 +10,7 @@ import FileUploader from "../components/ui/FileUploader";
 import {
   useAddNewPostMutation,
   useAddNewImageMutation,
-} from "../services/supabase";
+} from "../store/services/supabase";
 import { useAppSelector } from "../store/hook";
 
 import { useState } from "react";

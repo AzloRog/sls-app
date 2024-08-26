@@ -11,7 +11,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import supabase from "../../supabaseClient";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { setIsModalOpen } from "../../features/interface/interfaceSlice";
+import { setIsModalOpen } from "../../store/features/interface/interfaceSlice";
 import { useState } from "react";
 
 const ProfileMenu = () => {

@@ -1,6 +1,6 @@
 import supabase from "../supabaseClient";
 import { useAppDispatch } from "../store/hook";
-import { setIsAuth, setSession } from "../features/person/userSlice";
+import { setIsAuth, setSession } from "../store/features/person/userSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 

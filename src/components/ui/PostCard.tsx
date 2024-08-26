@@ -14,15 +14,11 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { red } from "@mui/material/colors";
-import { TablesInsert } from "../../types/database.types";
+import { TablesInsert } from "../../store/types/database.types";
 import {
-  useGetImageQuery,
-  useGetPostLikedUsersQuery,
   useDeletePostMutation,
-  useUpdatePostTextMutation,
-  useDeleteImageMutation,
-  useSetPostFavoriteMutation,
-} from "../../services/supabase";
+  useUpdatePostMutation,
+} from "../../store/services/PostsService";
 import { skipToken } from "@reduxjs/toolkit/query";
 
 import { useAppSelector } from "../../store/hook";
@@ -34,7 +30,7 @@ interface Props {
   userId: string;
   authorName: string;
   text: string;
-  imageUrl: string;
+  imageUrl: string | null;
   createdAt: string;
 }
 export type Mode = "default" | "editing";
@@ -50,30 +46,74 @@ const PostCard = ({
   const [mode, setMode] = useState<Mode>("default");
   const [tempText, setTempText] = useState<string>(text);
 
-  const { data: usersLiked } = useGetPostLikedUsersQuery(id);
-  const [updatePost, { isLoading: isUpdateProcess }] =
-    useUpdatePostTextMutation();
-  const [setPostFavorite, { data: likes }] = useSetPostFavoriteMutation();
+  const [updatePost, { isLoading: isUpdateProcess }] = useUpdatePostMutation();
 
-  const { data: image, isSuccess } = useGetImageQuery(imageUrl ?? skipToken);
   const [deletePost, { isLoading: isDeleteProcess }] = useDeletePostMutation();
-  const [deleteImage] = useDeleteImageMutation();
 
   const session = useAppSelector((store) => store.user.session);
   const date = new Date(createdAt!.split("+")[0] + "Z");
+
+  console.log(imageUrl);
   const handleUpdatePost = async () => {
-    await updatePost({ id, text: tempText });
-
-    location.reload();
+    await updatePost({ id, text });
   };
-  const handleDeletePost = async () => {
-    await deletePost(id);
+  // const handleDeletePost = async () => {
+  // await deletePost(id);
+  //
+  // if (imageUrl) {
+  // await deleteImage(imageUrl);
+  // }
+  // location.reload();
+  // };
 
-    if (imageUrl) {
-      await deleteImage(imageUrl);
-    }
-    location.reload();
-  };
+  const cardActions =
+    mode == "editing" ? (
+      <CardActions sx={{ mt: 2, justifyContent: "flex-end" }}>
+        <Button variant="outlined" onClick={() => setMode("default")}>
+          Decline
+        </Button>
+        <Button variant="contained" onClick={handleUpdatePost}>
+          {isUpdateProcess ? <CircularProgress /> : "Save"}
+        </Button>
+      </CardActions>
+    ) : (
+      <CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+      </CardActions>
+    );
+
+  const cardContent = (
+    <CardContent sx={{ marginTop: 1 }}>
+      {mode == "default" ? (
+        <>
+          {imageUrl && (
+            <CardMedia
+              component="img"
+              height="460"
+              image={imageUrl}
+              alt="Paella dish"
+            />
+          )}
+          <Typography
+            variant="body2"
+            color="text.primary"
+            whiteSpace={"pre-wrap"}
+            sx={{ overflowWrap: "break-word" }}
+          >
+            {text}
+          </Typography>
+        </>
+      ) : (
+        <TextareaAutosize
+          style={{ width: "100%", minHeight: 80 }}
+          value={tempText}
+          onChange={(e) => setTempText(e.target.value)}
+        />
+      )}
+    </CardContent>
+  );
 
   return (
     <Card
@@ -91,7 +131,7 @@ const PostCard = ({
             <ExpandMenu
               options={[
                 { name: "Edit", action: () => setMode("editing") },
-                { name: "Delete", action: handleDeletePost },
+                //{ name: "Delete", action: handleDeletePost },
               ]}
             />
           ) : null
@@ -99,66 +139,8 @@ const PostCard = ({
         title={authorName || "Anonim"}
         subheader={date.toDateString() + " " + date.toLocaleTimeString()}
       />
-      {imageUrl &&
-        (isSuccess ? (
-          <CardMedia
-            component="img"
-            image={image}
-            sx={{ maxHeight: 480, objectFit: "contain" }}
-          />
-        ) : (
-          <Box
-            height={360}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#F5F5F5",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        ))}
-      <CardContent sx={{ marginTop: 1 }}>
-        {mode == "default" ? (
-          <Typography
-            variant="body2"
-            color="text.primary"
-            whiteSpace={"pre-wrap"}
-            sx={{ overflowWrap: "break-word" }}
-          >
-            {text}
-          </Typography>
-        ) : (
-          <TextareaAutosize
-            style={{ width: "100%", minHeight: 80 }}
-            value={tempText}
-            onChange={(e) => setTempText(e.target.value)}
-          />
-        )}
-      </CardContent>
-      {mode == "editing" ? (
-        <CardActions sx={{ mt: 2, justifyContent: "flex-end" }}>
-          <Button variant="outlined" onClick={() => setMode("default")}>
-            Decline
-          </Button>
-          <Button variant="contained" onClick={handleUpdatePost}>
-            {isUpdateProcess ? <CircularProgress /> : "Save"}
-          </Button>
-        </CardActions>
-      ) : (
-        <CardActions disableSpacing>
-          <IconButton
-            aria-label="add to favorites"
-            onClick={() =>
-              setPostFavorite({ userId: session!.user.id, postId: id })
-            }
-          >
-            <FavoriteIcon />
-          </IconButton>
-          {usersLiked?.length}
-        </CardActions>
-      )}
+      {cardContent}
+      {cardActions}
     </Card>
   );
 };

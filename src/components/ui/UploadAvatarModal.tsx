@@ -1,6 +1,6 @@
 import { Modal, Box } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { setIsModalOpen } from "../../features/interface/interfaceSlice";
+import { setIsModalOpen } from "../../store/features/interface/interfaceSlice";
 
 const UploadAvatarModal = () => {
   const dispatch = useAppDispatch();
