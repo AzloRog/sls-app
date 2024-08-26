@@ -7,10 +7,8 @@ import {
 } from "@mui/material";
 import FileUploader from "../components/ui/FileUploader";
 
-import {
-  useAddNewPostMutation,
-  useAddNewImageMutation,
-} from "../store/services/supabase";
+import { useAddNewPostMutation } from "../store/services/PostsService";
+import { useAddNewImageMutation } from "../store/services/supabase";
 import { useAppSelector } from "../store/hook";
 
 import { useState } from "react";

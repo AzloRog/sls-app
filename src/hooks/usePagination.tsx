@@ -1,6 +1,4 @@
-import { SetStateAction, useCallback, useRef } from "react";
-
-type onChangePage = (currentPage: number) => void;
+import { useCallback, useRef } from "react";
 
 export const usePagination = (onChangePage: () => any, isLoading: boolean) => {
   const observer = useRef<IntersectionObserver>();

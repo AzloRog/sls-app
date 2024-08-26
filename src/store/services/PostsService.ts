@@ -5,7 +5,6 @@ import {
   TypedUseMutation,
 } from "@reduxjs/toolkit/query/react";
 import supabase from "../../supabaseClient";
-import { TablesInsert } from "../types/database.types";
 
 export interface Post {
   id: string;
@@ -43,7 +42,7 @@ export const postsService = createApi({
         }
         return { data };
       },
-      providesTags: (result, error, page) =>
+      providesTags: (result) =>
         result
           ? [
               ...result.map(({ id }) => ({
@@ -77,16 +76,16 @@ export const postsService = createApi({
         return { data };
       },
     }),
-    addNewPost: builder.mutation<any, TablesInsert<"users_posts">>({
+    addNewPost: builder.mutation<any, Partial<Post> & Pick<Post, "text">>({
       queryFn: async (post) => {
-        const { author_name, text, image_url, user_id } = post;
+        const { authorName, text, imageUrl, userId } = post;
         const { data, error } = await supabase
           .from("users_posts")
           .insert({
-            author_name: author_name,
+            author_name: authorName,
             text,
-            image_url: image_url,
-            user_id: user_id,
+            image_url: imageUrl,
+            user_id: userId,
           })
           .select();
         if (error) {
@@ -136,7 +135,7 @@ export const postsService = createApi({
         }
         return { data: id };
       },
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (id) => [
         { type: "Posts", id },
         { type: "Posts", id: "PARTIAL_LIST" },
       ],
@@ -159,7 +158,7 @@ export const {
   useGetPostQuery: TypedUseQuery<Post, string, any>;
   useAddNewPostMutation: TypedUseMutation<
     any,
-    TablesInsert<"users_posts">,
+    Partial<Post> & Pick<Post, "text">,
     any
   >;
   useUpdatePostMutation: TypedUseMutation<

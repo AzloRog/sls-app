@@ -22,7 +22,7 @@ import { useState } from "react";
 interface Props {
   id: string;
   userId: string;
-  authorName: string;
+  authorName: string | null;
   text: string;
   imageUrl: string | null;
   createdAt: string;
