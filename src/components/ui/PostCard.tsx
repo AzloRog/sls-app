@@ -6,7 +6,6 @@ import {
   CardMedia,
   CardContent,
   CircularProgress,
-  Box,
   TextareaAutosize,
   CardActions,
   Button,
@@ -14,12 +13,7 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { red } from "@mui/material/colors";
-import { TablesInsert } from "../../store/types/database.types";
-import {
-  useDeletePostMutation,
-  useUpdatePostMutation,
-} from "../../store/services/PostsService";
-import { skipToken } from "@reduxjs/toolkit/query";
+import { useUpdatePostMutation } from "../../store/services/PostsService";
 
 import { useAppSelector } from "../../store/hook";
 import ExpandMenu from "./ExpandMenu";
@@ -47,8 +41,6 @@ const PostCard = ({
   const [tempText, setTempText] = useState<string>(text);
 
   const [updatePost, { isLoading: isUpdateProcess }] = useUpdatePostMutation();
-
-  const [deletePost, { isLoading: isDeleteProcess }] = useDeletePostMutation();
 
   const session = useAppSelector((store) => store.user.session);
   const date = new Date(createdAt!.split("+")[0] + "Z");
@@ -116,10 +108,7 @@ const PostCard = ({
   );
 
   return (
-    <Card
-      sx={{ width: "100%" }}
-      className={isDeleteProcess ? "deleting-el" : ""}
-    >
+    <Card sx={{ width: "100%" }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
