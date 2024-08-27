@@ -13,7 +13,6 @@ import { useAddNewPostMutation } from "../store/services/PostsService";
 import { useAppSelector } from "../store/hook";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const CreatePostPage = () => {
   const [text, setText] = useState<string>("");
@@ -22,7 +21,6 @@ const CreatePostPage = () => {
   const [addNewPost, { isLoading }] = useAddNewPostMutation();
 
   const session = useAppSelector((store) => store.user.session);
-  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     let filePath = null;
