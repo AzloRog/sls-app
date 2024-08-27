@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-import supabase from "../../supabaseClient";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { setIsModalOpen } from "../../store/features/interface/interfaceSlice";
+import supabase from "../supabaseClient";
+import { useAppDispatch, useAppSelector } from "../store/hook";
+import { setIsModalOpen } from "../store/features/interface/interfaceSlice";
 import { useState } from "react";
 
 const ProfileMenu = () => {

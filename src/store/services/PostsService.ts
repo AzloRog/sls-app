@@ -14,19 +14,19 @@ export interface Post {
   text: string;
   imageUrl: string | null;
 }
+export interface InsertPost extends Post {
+  image: File | null;
+}
 
 export const postsService = createApi({
   reducerPath: "PostsService",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["Posts"],
   endpoints: (builder) => ({
-    getPostsList: builder.query<
-      Post[] | null,
-      { pageNumber: number; range: number }
-    >({
+    getPostsList: builder.query<Post[], { pageNumber: number; range: number }>({
       queryFn: async (args) => {
         const { pageNumber, range } = args;
-        let { data, error } = await supabase
+        const { data, error } = await supabase
           .from("users_posts")
           .select(
             "id, userId: user_id, createdAt: created_at, authorName: author_name, text, imageUrl: image_url"
@@ -36,12 +36,24 @@ export const postsService = createApi({
             (pageNumber - 1) * range,
             (pageNumber - 1) * range + (range - 1)
           );
-
         if (error) {
           return { error };
         }
-        return { data };
+        const postData = data as Post[];
+        const result = await Promise.all(
+          postData.map(async (item): Promise<Post> => {
+            if (item.imageUrl) {
+              const { data } = await supabase.storage
+                .from("images")
+                .getPublicUrl(item.imageUrl);
+              return { ...item, imageUrl: data.publicUrl };
+            }
+            return item;
+          })
+        );
+        return { data: result };
       },
+
       providesTags: (result) =>
         result
           ? [
@@ -52,6 +64,7 @@ export const postsService = createApi({
               { type: "Posts", id: "PARTIAL_LIST" },
             ]
           : [{ type: "Posts", id: "PARTIAL_LIST" }],
+
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;
       },
@@ -67,8 +80,11 @@ export const postsService = createApi({
       queryFn: async (id) => {
         const { data, error } = await supabase
           .from("users_posts")
-          .select("*")
-          .eq("id", id);
+          .select(
+            "id, userId: user_id, createdAt: created_at, authorName: author_name, text, imageUrl: image_url"
+          )
+          .eq("id", id)
+          .single();
 
         if (error) {
           return { error };
@@ -76,9 +92,12 @@ export const postsService = createApi({
         return { data };
       },
     }),
-    addNewPost: builder.mutation<any, Partial<Post> & Pick<Post, "text">>({
+    addNewPost: builder.mutation<
+      Post,
+      Partial<InsertPost> & Pick<InsertPost, "text">
+    >({
       queryFn: async (post) => {
-        const { authorName, text, imageUrl, userId } = post;
+        const { authorName, text, imageUrl, userId, image } = post;
         const { data, error } = await supabase
           .from("users_posts")
           .insert({
@@ -87,7 +106,22 @@ export const postsService = createApi({
             image_url: imageUrl,
             user_id: userId,
           })
-          .select();
+          .select(
+            "id, userId: user_id, createdAt: created_at, authorName: author_name, text, imageUrl: image_url"
+          )
+          .single();
+
+        // Загрузка изображения на сервер
+        if (imageUrl && image) {
+          const { error } = await supabase.storage
+            .from("images")
+            .upload(imageUrl, image);
+
+          if (error) {
+            return { error };
+          }
+        }
+
         if (error) {
           return { error };
         }
@@ -101,8 +135,12 @@ export const postsService = createApi({
         const { id, ...patch } = args;
         const { data, error } = await supabase
           .from("users_posts")
-          .update(patch)
-          .eq("id", id);
+          .update({ text: patch.text })
+          .eq("id", id)
+          .select(
+            "id, userId: user_id, createdAt: created_at, authorName: author_name, text, imageUrl: image_url"
+          )
+          .single();
 
         if (error) {
           return { error };
@@ -130,11 +168,21 @@ export const postsService = createApi({
           .delete()
           .eq("id", id);
 
+        const { data } = await supabase
+          .from("users_posts")
+          .select("imageUrl: image_url")
+          .eq("id", id)
+          .single();
+
+        if (data!.imageUrl) {
+          await supabase.storage.from("images").remove([data!.imageUrl]);
+        }
         if (error) {
           return { error };
         }
         return { data: id };
       },
+
       invalidatesTags: (id) => [
         { type: "Posts", id },
         { type: "Posts", id: "PARTIAL_LIST" },
@@ -151,14 +199,14 @@ export const {
   useDeletePostMutation,
 }: {
   useGetPostsListQuery: TypedUseQuery<
-    Post[] | null,
+    Post[],
     { pageNumber: number; range: number },
     any
   >;
   useGetPostQuery: TypedUseQuery<Post, string, any>;
   useAddNewPostMutation: TypedUseMutation<
-    any,
-    Partial<Post> & Pick<Post, "text">,
+    Post,
+    Partial<InsertPost> & Pick<InsertPost, "text">,
     any
   >;
   useUpdatePostMutation: TypedUseMutation<

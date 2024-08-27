@@ -1,5 +1,5 @@
 import { Box, List, ListItem } from "@mui/material";
-import PostCard from "./ui/PostCard";
+import PostCard from "./PostCard";
 import { useAppSelector, useAppDispatch } from "../store/hook";
 import { increasePostsPage } from "../store/features/interface/interfaceSlice";
 import { useGetPostsListQuery } from "../store/services/PostsService";
@@ -15,6 +15,7 @@ const PostsList = () => {
     pageNumber: page,
     range: PAGES_RANGE,
   });
+
   const [lastPostElementRef] = usePagination(
     () => dispatch(increasePostsPage()),
     isFetching

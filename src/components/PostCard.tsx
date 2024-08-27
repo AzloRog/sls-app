@@ -13,9 +13,13 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { red } from "@mui/material/colors";
-import { useUpdatePostMutation } from "../../store/services/PostsService";
 
-import { useAppSelector } from "../../store/hook";
+import {
+  useUpdatePostMutation,
+  useDeletePostMutation,
+} from "../store/services/PostsService";
+import { useAppSelector } from "../store/hook";
+
 import ExpandMenu from "./ExpandMenu";
 import { useState } from "react";
 
@@ -27,7 +31,10 @@ interface Props {
   imageUrl: string | null;
   createdAt: string;
 }
-export type Mode = "default" | "editing";
+export enum Mode {
+  default,
+  editing,
+}
 
 const PostCard = ({
   id,
@@ -37,31 +44,30 @@ const PostCard = ({
   imageUrl,
   createdAt,
 }: Props) => {
-  const [mode, setMode] = useState<Mode>("default");
+  const [mode, setMode] = useState<Mode>(Mode.default);
   const [tempText, setTempText] = useState<string>(text);
 
   const [updatePost, { isLoading: isUpdateProcess }] = useUpdatePostMutation();
+  const [deletePost] = useDeletePostMutation();
 
   const session = useAppSelector((store) => store.user.session);
   const date = new Date(createdAt!.split("+")[0] + "Z");
 
-  console.log(imageUrl);
   const handleUpdatePost = async () => {
-    await updatePost({ id, text });
+    await updatePost({ id, text: tempText });
+    setMode(Mode.default);
+    location.reload(); //Перезагрузка страницы т.к. невозможно обновить кэш redux при использовании infinite scroll (merge)
   };
-  // const handleDeletePost = async () => {
-  // await deletePost(id);
-  //
-  // if (imageUrl) {
-  // await deleteImage(imageUrl);
-  // }
-  // location.reload();
-  // };
+  const handleDeletePost = async () => {
+    await deletePost(id);
+
+    location.reload(); //Перезагрузка страницы т.к. невозможно обновить кэш redux при использовании infinite scroll (merge)
+  };
 
   const cardActions =
-    mode == "editing" ? (
+    mode == Mode.editing ? (
       <CardActions sx={{ mt: 2, justifyContent: "flex-end" }}>
-        <Button variant="outlined" onClick={() => setMode("default")}>
+        <Button variant="outlined" onClick={() => setMode(Mode.default)}>
           Decline
         </Button>
         <Button variant="contained" onClick={handleUpdatePost}>
@@ -78,13 +84,13 @@ const PostCard = ({
 
   const cardContent = (
     <CardContent sx={{ marginTop: 1 }}>
-      {mode == "default" ? (
+      {mode == Mode.default ? (
         <>
           {imageUrl && (
             <CardMedia
               component="img"
               height="460"
-              image={imageUrl}
+              src={imageUrl}
               alt="Paella dish"
             />
           )}
@@ -119,8 +125,8 @@ const PostCard = ({
           session!.user.id == userId ? (
             <ExpandMenu
               options={[
-                { name: "Edit", action: () => setMode("editing") },
-                //{ name: "Delete", action: handleDeletePost },
+                { name: "Edit", action: () => setMode(Mode.editing) },
+                { name: "Delete", action: handleDeletePost },
               ]}
             />
           ) : null

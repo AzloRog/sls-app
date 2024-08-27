@@ -6,7 +6,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import Header from "../components/Header";
-import UploadAvatarModal from "../components/ui/UploadAvatarModal";
+import UploadAvatarModal from "../components/UploadAvatarModal";
 import useRedirect from "../hooks/useRedirect";
 
 import SideMenu from "../components/SideMenu";

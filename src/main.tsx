@@ -9,8 +9,8 @@ import "@fontsource/roboto/700.css";
 
 import HomePage from "./pages/HomePage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
-import SigninForm from "./components/ui/SigninForm.tsx";
-import SignupForm from "./components/ui/SignupForm.tsx";
+import SigninForm from "./components/SigninForm.tsx";
+import SignupForm from "./components/SignupForm.tsx";
 
 import store from "./store/store.ts";
 import { Provider } from "react-redux";

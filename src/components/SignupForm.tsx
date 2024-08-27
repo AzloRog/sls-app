@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import supabase from "../../supabaseClient";
+import supabase from "../supabaseClient";
 import { Link } from "react-router-dom";
 
 const SignupForm = () => {

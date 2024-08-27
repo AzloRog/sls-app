@@ -5,39 +5,39 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import FileUploader from "../components/ui/FileUploader";
+
+import FileUploader from "../components/FileUploader";
+import getCodeNameByImage from "../utils/getCodeNameByImage";
 
 import { useAddNewPostMutation } from "../store/services/PostsService";
-import { useAddNewImageMutation } from "../store/services/supabase";
 import { useAppSelector } from "../store/hook";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 const CreatePostPage = () => {
   const [text, setText] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
 
-  const [addNewPost, { isLoading: isTextLoading }] = useAddNewPostMutation();
-  const [addNewImage, { isLoading: isImageLoading }] = useAddNewImageMutation();
+  const [addNewPost, { isLoading }] = useAddNewPostMutation();
 
   const session = useAppSelector((store) => store.user.session);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    let filePath = undefined;
+    let filePath = null;
     if (file) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      filePath = `${fileName}`;
-      console.log(file);
-      await addNewImage({ path: filePath, image: file });
+      filePath = getCodeNameByImage(file);
     }
+
     const { error } = await addNewPost({
       authorName: session!.user.user_metadata.name as string,
       text,
       imageUrl: filePath,
+      image: file,
       userId: session!.user.id,
     });
+
     if (error) {
       console.error(error);
       return;
@@ -45,8 +45,12 @@ const CreatePostPage = () => {
     location.reload();
   };
 
-  if (isTextLoading || isImageLoading) {
-    return <CircularProgress />;
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
   return (
     <Box>
@@ -72,6 +76,7 @@ const CreatePostPage = () => {
           </Typography>
           <TextareaAutosize
             minRows={8}
+            value={text}
             onChange={(e) => setText(e.target.value)}
           />
         </Box>
@@ -86,7 +91,13 @@ const CreatePostPage = () => {
           </FileUploader>
         </Box>
         <Box sx={{ alignSelf: "flex-end", display: "flex", gap: 1 }}>
-          <Button variant="outlined" onClick={() => navigate("/")}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setText("");
+              setFile(null);
+            }}
+          >
             Cancel
           </Button>
           <Button variant="contained" onClick={handleSubmit}>

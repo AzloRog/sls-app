@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Typography } from "@mui/material";
-import ProfileMenu from "./ui/ProfileMenu";
+import ProfileMenu from "./ProfileMenu";
 
 const Header = () => {
   return (
